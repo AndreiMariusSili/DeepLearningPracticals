@@ -6,7 +6,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from mlp_pytorch import MLP
+from mlp_pytorch_custom import MLP
 from torch import nn, optim
 import numpy as np
 import cifar10_utils
@@ -17,7 +17,7 @@ import os
 
 # Default constants
 DNN_HIDDEN_UNITS_DEFAULT = '100'
-LEARNING_RATE_DEFAULT = 2e-3
+LEARNING_RATE_DEFAULT = 1e-3
 MAX_STEPS_DEFAULT = 1500
 BATCH_SIZE_DEFAULT = 200
 EVAL_FREQ_DEFAULT = 100
@@ -85,10 +85,10 @@ def train():
     #######################
 
     os.makedirs('results', exist_ok=True)
-    train_file = open('results/mlp_pytorch_default_train.csv', 'w+')
+    train_file = open('results/mlp_pytorch_custom_train.csv', 'w+')
     train_writer = csv.DictWriter(train_file, ['step', 'loss', 'acc'])
     train_writer.writeheader()
-    eval_file = open('results/mlp_pytorch_default_eval.csv', 'w+')
+    eval_file = open('results/mlp_pytorch_custom_eval.csv', 'w+')
     eval_writer = csv.DictWriter(eval_file, ['step', 'loss', 'acc'])
     eval_writer.writeheader()
 
@@ -96,14 +96,14 @@ def train():
     cifar_10 = cifar10_utils.get_cifar10(os.path.join('cifar10', 'cifar-10-batches-py'), one_hot=False)
 
     # initialise model and loss
-
     model = MLP(n_inputs=3 * 32 * 32, n_hidden=dnn_hidden_units, n_classes=10)
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(model.parameters(), lr=FLAGS.learning_rate)
+    optimizer = optim.Adam(model.parameters(), lr=FLAGS.learning_rate)
 
     # train model
     eval_step = 0
     for step in range(FLAGS.max_steps):
+        model.train()
 
         # prepare data
         x, t = cifar_10['train'].next_batch(FLAGS.batch_size)
@@ -135,6 +135,7 @@ def train():
         ))
 
         if step % FLAGS.eval_freq == 0:
+            model.eval()
             with torch.no_grad():
                 x_test, t_test = cifar_10['test'].images, cifar_10['test'].labels
                 x_test = torch.tensor(x_test.reshape(x_test.shape[0], -1), dtype=torch.float)
