@@ -1,0 +1,12 @@
+{
+    "max_norm": 10.0,
+    "num_hidden": 128,
+    "model_path": "./models/",
+    "num_classes": 10,
+    "model_type": "RNN",
+    "train_steps": 5000,
+    "batch_size": 128,
+    "input_dim": 1,
+    "learning_rate": 0.001,
+    "input_length": 44
+}
