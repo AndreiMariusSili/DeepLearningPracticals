@@ -4,6 +4,7 @@ import errno
 import numpy as np
 import torch
 import torch.utils.data as data
+from torchvision import datasets
 from torchvision.datasets.utils import download_url
 import torchvision.transforms as transforms
 from PIL import Image
@@ -139,11 +140,16 @@ def bmnist(root='./data/', batch_size=128, download=True):
     val_set = BMNIST(root, 'val', data_transforms, download)
     test_set = BMNIST(root, 'test', data_transforms, download)
 
+    # train_set = datasets.MNIST('../data', train=True, download=True,
+    #                transform=transforms.ToTensor())
+    # val_set = datasets.MNIST('../data', train=False, download=True,
+    #                transform=transforms.ToTensor())
+
     trainloader = torch.utils.data.DataLoader(train_set, batch_size=batch_size,
-                                              shuffle=True, num_workers=4)
+                                              shuffle=True, num_workers=8)
     valloader = torch.utils.data.DataLoader(val_set, batch_size=batch_size,
-                                            shuffle=False, num_workers=10)
+                                            shuffle=False, num_workers=8)
     testloader = torch.utils.data.DataLoader(test_set, batch_size=batch_size,
-                                             shuffle=False, num_workers=10)
+                                             shuffle=False, num_workers=8)
 
     return trainloader, valloader, testloader
